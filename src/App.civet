@@ -1,6 +1,7 @@
 "civet jsxCode"
 
 from solid-js import { createSignal, For }
+from katex import { renderToString }
 
 type DimVal = { value: string, bg: string }
 type Entry = Record<string, number | string> & {
@@ -189,11 +190,16 @@ export function App()
           >
             do
               style: Record<string, string> := {}
-              cell := rect.value
+              html := rect.value
               .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
                 style.color = color
                 text
               .replace /\\rotatebox\{90\}{([^}]+)}/g, (_, text) =>
                 style.'writing-mode' = 'sideways-lr'
                 text
-              <span {style}>cell
+              .replace /&/g, '&amp;'
+              .replace /</g, '&lt;'
+              .replace />/g, '&gt;'
+              .replace /\$([^$]+)\$/g, (_, math) =>
+                renderToString math
+              <span {style} innerHTML=html>
