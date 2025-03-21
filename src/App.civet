@@ -2,7 +2,7 @@
 
 from solid-js import { createSignal, For }
 
-type DimVal = { title: string, bg: string }
+type DimVal = { value: string, bg: string }
 type Entry = Record<string, number | string> & {
   '!val': string
   '!bg': string
@@ -50,7 +50,7 @@ function parse(text: string): Parsed
     dimvals[d] = []
     for i of [0...vs#] by 2
       dimvals[d].push
-        title: vs[i]
+        value: vs[i]
         bg: vs[i+1]
   dims: Record<string, number> := {}
     for d, v in dimvals
@@ -74,11 +74,12 @@ function parse(text: string): Parsed
 
   {dimvals, dims, hdims, vdims, entries}
 
-function makeGrid({dims, hdims, vdims, entries}: Parsed): string[][]
-  // count of values for these dimensions
-  function combos(ds: string[])
-    for product d of ds
-      dims[d]
+// count of values for these dimensions
+function combos(dims: Record<string, number>, ds: string[])
+  for product d of ds
+    dims[d]
+
+function makeGrid({dims, hdims, vdims, entries}: Parsed): Entry[][]
   // translate between overall index and dictionary of each index
   function fold(xdims: string[], idx: number): Record<string, number>
     if xdims#
@@ -100,8 +101,8 @@ function makeGrid({dims, hdims, vdims, entries}: Parsed): string[][]
         e[d] is dim[d]
       e
 
-  for col of [0...combos hdims]
-    for row of [0...combos vdims]
+  for col of [0...combos dims, hdims]
+    for row of [0...combos dims, vdims]
       findentry row, col
 
 function rectangulate(grid: Entry??[][]): Rect[]
@@ -128,12 +129,28 @@ function rectangulate(grid: Entry??[][]): Rect[]
 export function App()
   [rows, setRows] := createSignal<Rect[][]> []
   function load(text: string)
-    data := parse text
+    data^{dims,hdims,vdims,dimvals} := parse text
     grid := makeGrid data
     rects := rectangulate grid
+
+    hoff := vdims#
+    voff := hdims#
     newRows: Rect[][] := []
+    for d, i of data.hdims
+      newRows[i] = []
+      for copy of [0...combos dims, hdims[...i]]
+        for v, j of dimvals[d]
+          wth := combos dims, hdims[i+1..]
+          col := hoff + copy * combos(dims, hdims[i..]) + j * wth
+          newRows[i].push
+            vs: i+1
+            ve: i+2
+            hs: col
+            he: col + wth
+            value: v.value
+            bg: v.bg
     for rect of rects
-      (newRows[rect.vs] ?= []).push rect
+      (newRows[rect.vs + voff] ?= []).push rect
     setRows newRows
 
   <h1>'Hyper-Table'
@@ -154,7 +171,12 @@ export function App()
             'background-color': rect.bg
           >
             do
-              color .= undefined
+              style: Record<string, string> := {}
               cell := rect.value
-              .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, ^color, text) => text
-              <span style={color: color}>cell
+              .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
+                style.color = color
+                text
+              .replace /\\rotatebox\{90\}{([^}]+)}/g, (_, text) =>
+                style.'writing-mode' = 'sideways-lr'
+                text
+              <span {style}>cell
