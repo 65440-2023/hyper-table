@@ -101,8 +101,8 @@ function makeGrid({dims, hdims, vdims, entries}: Parsed): Entry[][]
         e[d] is dim[d]
       e
 
-  for col of [0...combos dims, hdims]
-    for row of [0...combos dims, vdims]
+  for row of [0...combos dims, vdims]
+    for col of [0...combos dims, hdims]
       findentry row, col
 
 function rectangulate(grid: Entry??[][]): Rect[]
@@ -136,8 +136,11 @@ export function App()
     hoff := vdims#
     voff := hdims#
     newRows: Rect[][] := []
+    // top headers
     for d, i of data.hdims
       newRows[i] = []
+      for h of [0...hoff]
+        newRows[i].push {vs: i, ve: i+1, hs: h, he: h+1, value: '', bg: ''}
       for copy of [0...combos dims, hdims[...i]]
         for v, j of dimvals[d]
           wth := combos dims, hdims[i+1..]
@@ -149,6 +152,20 @@ export function App()
             he: col + wth
             value: v.value
             bg: v.bg
+    // side headers
+    for d, i of data.vdims
+      for copy of [0...combos dims, vdims[...i]]
+        for v, j of dimvals[d]
+          hgt := combos dims, vdims[i+1..]
+          row := voff + copy * combos(dims, vdims[i..]) + j * hgt
+          (newRows[row] ?= []).push
+            vs: row
+            ve: row + hgt
+            hs: i+1
+            he: i+2
+            value: v.value
+            bg: v.bg
+    // body
     for rect of rects
       (newRows[rect.vs + voff] ?= []).push rect
     setRows newRows
