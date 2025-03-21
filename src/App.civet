@@ -1,2 +1,160 @@
+"civet jsxCode"
+
+from solid-js import { createSignal, For }
+
+type DimVal = { title: string, bg: string }
+type Entry = Record<string, number | string> & {
+  '!val': string
+  '!bg': string
+}
+type Parsed = {
+  dimvals: Record string, DimVal[]
+  dims: Record string, number
+  hdims: string[]
+  vdims: string[]
+  entries: Entry[]
+}
+type Rect = {
+  hs: number
+  he: number
+  vs: number
+  ve: number
+  bg: string
+  value: string
+}
+
+function parse(text: string): Parsed
+  // format:
+  /*
+  param 1	value 1	cell color	value 2	cell color etc.
+  param 2	value 1	etc.
+  etc.	etc.	etc.
+
+  horizontal	dimensions	in	precedence	order
+  vertical	dimensions	in	precedence	order
+  entry 1	cell color	param 1	0 (param 1 value)	param 2	etc.
+  entry 2	cell color	param 2	etc.
+  */
+  // (each cell) is for things like background color that need to be repeated across multirows
+  // a cell goes with its earliest result in the list
+  // e.g. you might want the last line to be 'open	' with no parameters to cover everything else
+  // a line that starts with % is a comment
+  lines := text.split /\r\n?|\n/g
+  line .= -1
+
+  // Parameters and their values
+  dimvals: Record<string, DimVal[]> := {}
+  while lines[++line].trim()
+    continue if lines[line].startsWith '%'
+    [d, ...vs] := lines[line].split '\t'
+    dimvals[d] = []
+    for i of [0...vs#] by 2
+      dimvals[d].push
+        title: vs[i]
+        bg: vs[i+1]
+  dims: Record<string, number> := {}
+    for d, v in dimvals
+      [d]: v#
+
+  // Skip assignment
+  while lines[++line].startsWith '%'
+  hdims := lines[line].split '\t'
+  while lines[++line].startsWith '%'
+  vdims := lines[line].split '\t'
+
+  entries: Entry[] := []
+  while lines[++line]
+    continue if lines[line].startsWith '%'
+    [val, bg, ...ds] := lines[line].split '\t'
+    entries.push {}
+      for i of [0...ds#] by 2
+        [ds[i]]: Number ds[i+1]
+      '!val': val
+      '!bg': bg
+
+  {dimvals, dims, hdims, vdims, entries}
+
+function makeGrid({dims, hdims, vdims, entries}: Parsed): string[][]
+  // count of values for these dimensions
+  function combos(ds: string[])
+    for product d of ds
+      dims[d]
+  // translate between overall index and dictionary of each index
+  function fold(xdims: string[], idx: number): Record<string, number>
+    if xdims#
+      {}
+        ...fold(xdims[...-1], idx %/ dims[xdims.-1])
+        [xdims.-1]: idx %% dims[xdims.-1]
+    else
+      {}
+  function unfold(xdims: string[], vs: Record<string, number>): number
+    if xdims#
+      unfold(xdims[...-1], vs) * dims[xdims.-1] + vs[xdims.-1]
+    else
+      0
+  // the first entry that matches this position
+  function findentry(row: number, col: number)
+    for first e of entries
+      dim := {...fold(vdims, row), ...fold(hdims, col)}
+      continue unless for every d in e when not d.startsWith '!'
+        e[d] is dim[d]
+      e
+
+  for col of [0...combos hdims]
+    for row of [0...combos vdims]
+      findentry row, col
+
+function rectangulate(grid: Entry??[][]): Rect[]
+  height := grid#
+  width := grid.0.#
+  ans: Rect[] := []
+  for vs of [0...height]
+    for hs of [0...width]
+      continue unless e := grid[vs][hs]
+      val := e['!val']
+      // greedily find biggest rectangle, horizontal first
+      he .= hs
+      ve .= vs
+      he++ while he < width and grid[vs][he]?['!val'] is val
+      ve++ while ve < height and
+        for every cell of grid[ve][hs...he]
+          cell?['!val'] is val
+      ans.push {hs, he, vs, ve, value: val, bg: e['!bg']}
+      for v of [vs...ve]
+        for h of [hs...he]
+          grid[v][h] = null
+  ans
+
 export function App()
-  <h1>Hello, World!
+  [rows, setRows] := createSignal<Rect[][]> []
+  function load(text: string)
+    data := parse text
+    grid := makeGrid data
+    rects := rectangulate grid
+    newRows: Rect[][] := []
+    for rect of rects
+      (newRows[rect.vs] ?= []).push rect
+    setRows newRows
+
+  <h1>'Hyper-Table'
+  <input type="file" accept=".tsv" onInput=
+    (e) =>
+      file := e.currentTarget.files?.[0]
+      return unless file?
+      reader := new FileReader
+      reader.onload = => load reader.result as string
+      reader.readAsText file
+  >
+  <hr>
+  <table>
+    <For each=rows()>(row) =>
+      <tr>
+        <For each=row>(rect) =>
+          <td rowspan={rect.ve - rect.vs} colspan={rect.he - rect.hs} style=
+            'background-color': rect.bg
+          >
+            do
+              color .= undefined
+              cell := rect.value
+              .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, ^color, text) => text
+              <span style={color: color}>cell
