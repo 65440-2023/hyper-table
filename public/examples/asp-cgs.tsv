@@ -1,0 +1,15 @@
+and			\textcolor{white}{AND}	violet
+or			\textcolor{white}{OR}	red
+maj			\textcolor{white}{MAJ}	blue
+r/b			\textcolor{white}{r/b conversion}	purple
+cross			\textcolor{white}{crossover}	teal
+
+or	and	maj
+r/b	cross
+ASP-complete [1]	lime	and	1	or	1	maj	1
+\#P-complete [2]	cyan	and	1	or	1
+\#P-complete [3] 	cyan	or	1	maj	1	r/b	1	cross	1
+\#P-complete [4]	cyan	and	1	r/b	1
+FP [5]	orange	and	0	or	0
+FP [6]	orange	or	0	r/b	0
+open	

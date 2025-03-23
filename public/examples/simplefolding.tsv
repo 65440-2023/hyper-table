@@ -1,0 +1,17 @@
+shape	square		rectangular	
+length	infinite		finite	
+layers	one layer		some layers		all layers	
+creases	assigned		mixed		unassigned	
+angles	orthogonal		diagonal	
+
+length	shape
+layers	creases	angles
+NP-comp (N4)	red	creases	1	layers	1
+NP-comp (N4)	red	creases	1	layers	2
+poly [1]	teal	shape	0	layers	0
+poly [1] 	teal	creases	1	angles	0	layers	0
+poly (P1)	cyan	angles	0	creases	0
+poly (P1)	cyan	angles	0	creases	2
+NP-comp (N2)	magenta	layers	1	length	1
+NP-comp (N2)	magenta	layers	2	length	1
+open	yellow

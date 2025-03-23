@@ -1,0 +1,58 @@
+P	$P=1$		$P=O(1)$		any	
+max values	$M=O(1)$		any	
+%value structure	no value structure		total order (constraint)		partial order (constraint)		partial order (objective)		relation (objective)	
+value structure	\rotatebox{90}{no value structure}		\rotatebox{90}{total order (constraint)}		\rotatebox{90}{partial order (constraint)}		\rotatebox{90}{partial order (objective)}		\rotatebox{90}{relation (objective)}	
+D	$D=1$		$D=2$	
+results structure	no results structure		total order (constraint)		partial order (constraint)		partial order (objective)		relation (objective)	
+input format	explicit		succinct	
+question	possible with target objective		minimize components		everything covered?	
+
+max values	P	value structure
+question	input format	D	results structure
+%
+you are here	purple	P	2	max values	1	value structure	2	D	1	results structure	0	input format	1	question	1
+%
+no	black	P	0	D	1
+% for 'everything covered?', several parameters are irrelevant
+no	black	question	2	D	1
+no	black	question	2	results structure	1
+no	black	question	2	results structure	2
+no	black	question	2	results structure	3
+no	black	question	2	results structure	4
+no	black	question	2	value structure	1
+no	black	question	2	value structure	2
+no	black	question	2	value structure	3
+no	black	question	2	value structure	4
+% if the objective is minimizing components, shouldn't have other objectives
+no	black	question	1	value structure	3
+no	black	question	1	value structure	4
+no	black	question	1	results structure	3
+no	black	question	1	results structure	4
+%
+\textcolor{white}{always}	blue	value structure	0	results structure	0	question	0
+\textcolor{white}{always}	blue	value structure	1	results structure	0	question	0
+\textcolor{white}{always}	blue	value structure	2	results structure	0	question	0
+\textcolor{white}{always}	blue	value structure	0	results structure	1	question	0	P	0
+\textcolor{white}{always}	blue	value structure	0	results structure	2	question	0	P	0
+\textcolor{white}{$O(1)$}	blue	P	1	max values	0
+\textcolor{white}{$O(1)$}	blue	P	0	max values	0
+%
+\textcolor{white}{$O(n)$}	blue	P	0	value structure	1
+\textcolor{white}{P}	blue	P	1	value structure	1
+%
+\textcolor{white}{$O(n)$}	blue	P	0	value structure	2	results structure	2	question	0
+quasipolynomial	cyan	max values	0	input format	0
+quasipolynomial	cyan	value structure	1	input format	0
+NP-hard (FAS)	red	value structure	3	results structure	2	question	0	max values	1
+NP-hard (FAS)	red	value structure	2	results structure	3	question	0	max values	1
+NP-hard (FAS)	red	value structure	3	results structure	3	question	0	max values	1
+NP-hard (Ham1)	red	value structure	4	results structure	0	D	1	question	0	max values	1
+NP-hard (Ham1)	red	value structure	4	results structure	4	D	1	question	0	max values	1
+NP-hard (Ham1)	red	value structure	0	results structure	4	D	1	question	0	max values	1
+%
+NP-hard (Ham2)	red	P	1	D	1	question	1	max values	1
+NP-hard (Ham2)	red	P	2	D	1	question	1	max values	1
+%
+coNP-complete	orange	input format	1	question	2	P	2
+%
+open	yellow

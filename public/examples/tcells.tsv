@@ -1,0 +1,14 @@
+undir	undirected			
+1insym	1-in forced center			
+1outsym	1-out forced center			
+1inasym	1-in forced side			
+1outasym	1-out forced side			
+
+undir	1insym	1outsym
+1inasym	1outasym
+	black	undir	1	1insym	1	1inasym	1
+	black	undir	1	1outsym	1	1outasym	1
+P	orange	1inasym	1	1outasym	1
+ASP-C	lime	undir	0	1inasym	0	1outasym	0
+ASP-C	lime	1insym	0	1outsym	0	1inasym	0	1outasym	0
+open	

@@ -1,7 +1,24 @@
 "civet jsxCode"
 
-from solid-js import { createSignal, For }
+from solid-js import { createEffect, createSignal, For }
 from katex import { renderToString }
+
+examples :=
+  . filename: 'asp-cgs.tsv'
+    title: 'Constraint Graph Satisfaction Counting'
+  //. filename: 'plumber.tsv'
+  //  title: 'KPlumber'
+  . filename: 'simplefolding.tsv'
+    title: 'Simple Folding'
+  . filename: 'tablelayout.tsv'
+    title: 'Hardness Table Layout Hardness Table'
+  . filename: 'tcells.tsv'
+    title: 'T Cells'
+  . filename: 'test.tsv'
+    title: 'Test'
+  //. filename: 'tetrotile.tsv'
+  //  title: 'Tetromino Tiling'
+defaultExample := 'tablelayout.tsv'
 
 type DimVal = { value: string, bg: string }
 type Entry = Record<string, number | string> & {
@@ -128,7 +145,17 @@ function rectangulate(grid: Entry??[][]): Rect[]
   ans
 
 export function App()
+  [example, setExample] := createSignal<string?> defaultExample
   [rows, setRows] := createSignal<Rect[][]> []
+
+  createEffect :void =>
+    return unless loading := example()
+    fetch `/examples/${loading}`
+    |> await
+    |> .text()
+    |> await
+    |> loading is example() ? load : =>
+
   function load(text: string)
     data^{dims,hdims,vdims,dimvals} := parse text
     grid := makeGrid data
@@ -172,12 +199,21 @@ export function App()
     setRows newRows
 
   <h1>'Hyper-Table'
+  <select value=example() onChange=
+    (e) =>
+      setExample e.currentTarget.value
+  >
+    <For each=examples>(ex) =>
+      <option value=ex.filename>
+        {ex.title}
   <input type="file" accept=".tsv" onInput=
     (e) =>
       file := e.currentTarget.files?.[0]
       return unless file?
       reader := new FileReader
-      reader.onload = => load reader.result as string
+      reader.onload = =>
+        load reader.result as string
+        setExample undefined
       reader.readAsText file
   >
   <hr>
@@ -190,7 +226,7 @@ export function App()
           >
             do
               style: Record<string, string> := {}
-              html := rect.value
+              html .= rect.value
               .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
                 style.color = color
                 text
@@ -200,6 +236,8 @@ export function App()
               .replace /&/g, '&amp;'
               .replace /</g, '&lt;'
               .replace />/g, '&gt;'
+              .replace /\\([#&])/g, '$1'
               .replace /\$([^$]+)\$/g, (_, math) =>
                 renderToString math
+              html or= '&nbsp;'
               <span {style} innerHTML=html>
