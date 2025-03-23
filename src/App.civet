@@ -1,6 +1,7 @@
 "civet jsxCode"
 
 from solid-js import { createEffect, createSignal, For }
+from solid-js/store import { createStore }
 from katex import { renderToString }
 
 examples :=
@@ -74,7 +75,7 @@ function parse(text: string): Parsed
     for d, v in dimvals
       [d]: v#
 
-  // Skip assignment
+  // Default assignment
   while lines[++line].startsWith '%'
   hdims := lines[line].split '\t'
   while lines[++line].startsWith '%'
@@ -144,8 +145,51 @@ function rectangulate(grid: Entry??[][]): Rect[]
           grid[v][h] = null
   ans
 
+function makeRows(data: Parsed): Rect[][]
+  {dims, hdims, vdims, dimvals} := data
+  grid := makeGrid data
+  rects := rectangulate grid
+
+  hoff := vdims#
+  voff := hdims#
+  rows: Rect[][] := []
+  // top headers
+  for d, i of data.hdims
+    rows[i] = []
+    for h of [0...hoff]
+      rows[i].push {vs: i, ve: i+1, hs: h, he: h+1, value: '', bg: ''}
+    for copy of [0...combos dims, hdims[...i]]
+      for v, j of dimvals[d]
+        wth := combos dims, hdims[i+1..]
+        col := hoff + copy * combos(dims, hdims[i..]) + j * wth
+        rows[i].push
+          vs: i+1
+          ve: i+2
+          hs: col
+          he: col + wth
+          value: v.value
+          bg: v.bg
+  // side headers
+  for d, i of data.vdims
+    for copy of [0...combos dims, vdims[...i]]
+      for v, j of dimvals[d]
+        hgt := combos dims, vdims[i+1..]
+        row := voff + copy * combos(dims, vdims[i..]) + j * hgt
+        (rows[row] ?= []).push
+          vs: row
+          ve: row + hgt
+          hs: i+1
+          he: i+2
+          value: v.value
+          bg: v.bg
+  // body
+  for rect of rects
+    (rows[rect.vs + voff] ?= []).push rect
+  rows
+
 export function App()
   [example, setExample] := createSignal<string?> defaultExample
+  [data, setData] := createStore<Parsed | {}>()
   [rows, setRows] := createSignal<Rect[][]> []
 
   createEffect :void =>
@@ -157,46 +201,10 @@ export function App()
     |> loading is example() ? load : =>
 
   function load(text: string)
-    data^{dims,hdims,vdims,dimvals} := parse text
-    grid := makeGrid data
-    rects := rectangulate grid
-
-    hoff := vdims#
-    voff := hdims#
-    newRows: Rect[][] := []
-    // top headers
-    for d, i of data.hdims
-      newRows[i] = []
-      for h of [0...hoff]
-        newRows[i].push {vs: i, ve: i+1, hs: h, he: h+1, value: '', bg: ''}
-      for copy of [0...combos dims, hdims[...i]]
-        for v, j of dimvals[d]
-          wth := combos dims, hdims[i+1..]
-          col := hoff + copy * combos(dims, hdims[i..]) + j * wth
-          newRows[i].push
-            vs: i+1
-            ve: i+2
-            hs: col
-            he: col + wth
-            value: v.value
-            bg: v.bg
-    // side headers
-    for d, i of data.vdims
-      for copy of [0...combos dims, vdims[...i]]
-        for v, j of dimvals[d]
-          hgt := combos dims, vdims[i+1..]
-          row := voff + copy * combos(dims, vdims[i..]) + j * hgt
-          (newRows[row] ?= []).push
-            vs: row
-            ve: row + hgt
-            hs: i+1
-            he: i+2
-            value: v.value
-            bg: v.bg
-    // body
-    for rect of rects
-      (newRows[rect.vs + voff] ?= []).push rect
-    setRows newRows
+    setData parse text
+  createEffect =>
+    return unless 'dims' in data
+    setRows makeRows data
 
   <h1>'Hyper-Table'
   <select value=example() onChange=
