@@ -14,3 +14,20 @@ td
   text-align: center
   vertical-align: middle
   border: black 1.5px solid
+
+.dimss
+  display: grid
+  grid-template-columns: auto 1fr
+  gap: 0.25rem
+  align-items: center
+.dims
+  display: flex
+  gap: 0.25rem
+  flex-wrap: wrap
+  &:empty::before
+    content: '\00A0'
+.dim
+  background: white
+  color: black
+  padding: 0.25rem
+  border: black 1.5px solid

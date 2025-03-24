@@ -20,6 +20,7 @@
   "devDependencies": {
     "@danielx/civet": "0.10.0",
     "sass-embedded": "^1.80.6",
+    "solid-dnd-directive": "^0.2.0",
     "vite": "^6.2.2",
     "vite-plugin-solid": "2.11.6"
   }

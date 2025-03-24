@@ -1,8 +1,10 @@
-"civet jsxCode"
-
-from solid-js import { createEffect, createSignal, For }
+from solid-js import { createEffect, createSignal, For, Show, batch }
 from solid-js/store import { createStore }
+from solid-dnd-directive import { dndzone }
 from katex import { renderToString }
+
+from solid-dnd-directive import { setDebugMode }
+setDebugMode true
 
 examples :=
   . filename: 'asp-cgs.tsv'
@@ -40,6 +42,10 @@ type Rect = {
   ve: number
   bg: string
   value: string
+}
+type Item = {
+  id: number
+  title: string
 }
 
 function parse(text: string): Parsed
@@ -146,7 +152,7 @@ function rectangulate(grid: Entry??[][]): Rect[]
   ans
 
 function makeRows(data: Parsed): Rect[][]
-  {dims, hdims, vdims, dimvals} := data
+  {dims, dimvals, hdims, vdims} := data
   grid := makeGrid data
   rects := rectangulate grid
 
@@ -191,6 +197,10 @@ export function App()
   [example, setExample] := createSignal<string?> defaultExample
   [data, setData] := createStore<Parsed | {}>()
   [rows, setRows] := createSignal<Rect[][]> []
+  [hDims, setHDims] := createSignal<Item[]> []
+  [vDims, setVDims] := createSignal<Item[]> []
+  [hItems, setHItems] := createSignal<Item[]> []
+  [vItems, setVItems] := createSignal<Item[]> []
 
   createEffect :void =>
     return unless loading := example()
@@ -201,12 +211,26 @@ export function App()
     |> loading is example() ? load : =>
 
   function load(text: string)
-    setData parse text
+    batch =>
+      setData parse text
+      return unless 'hdims' in data
+      id .= 0
+      setHDims 
+        for title of data.hdims
+          {id: ++id, title}
+      setVDims
+        for title of data.vdims
+          {id: ++id, title}
   createEffect =>
-    return unless 'dims' in data
-    setRows makeRows data
+    return unless 'dims' in data and (hDims()# or vDims()#)
+    setRows makeRows {}
+      ...data
+      hdims: hDims().map .title
+      vdims: vDims().map .title
+  createEffect => setHItems hDims()
+  createEffect => setVItems vDims()
 
-  <h1>'Hyper-Table'
+  <h1>Hyper-Table
   <select value=example() onChange=
     (e) =>
       setExample e.currentTarget.value
@@ -224,6 +248,25 @@ export function App()
         setExample undefined
       reader.readAsText file
   >
+  <Show when={hItems()# or vItems()#}>
+    <hr>
+    <.dimss>
+      <label>Horizontal:
+      <.dims use:dndzone={items: hItems} on:consider=
+        (e) => setHItems e.detail.items
+      on:finalize=
+        (e) => setHDims e.detail.items
+      >
+        <For each=hItems()>(dim) =>
+          <span .dim>{dim.title}
+      <label>Vertical:
+      <.dims use:dndzone={items: vItems} on:consider=
+        (e) => setVItems e.detail.items
+      on:finalize=
+        (e) => setVDims e.detail.items
+      >
+        <For each=vItems()>(dim) =>
+          <span .dim>{dim.title}
   <hr>
   <table>
     <For each=rows()>(row) =>
@@ -232,7 +275,7 @@ export function App()
           <td rowspan={rect.ve - rect.vs} colspan={rect.he - rect.hs} style=
             'background-color': rect.bg
           >
-            do
+            >do
               style: Record<string, string> := {}
               html .= rect.value
               .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
