@@ -204,7 +204,7 @@ export function App()
 
   createEffect :void =>
     return unless loading := example()
-    fetch `/examples/${loading}`
+    fetch `examples/${loading}`
     |> await
     |> .text()
     |> await
