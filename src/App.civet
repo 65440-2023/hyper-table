@@ -3,9 +3,6 @@ from solid-js/store import { createStore }
 from solid-dnd-directive import { dndzone }
 from katex import { renderToString }
 
-from solid-dnd-directive import { setDebugMode }
-setDebugMode true
-
 examples :=
   . filename: 'asp-cgs.tsv'
     title: 'Constraint Graph Satisfaction Counting'
