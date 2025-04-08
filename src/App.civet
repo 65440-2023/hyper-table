@@ -51,7 +51,7 @@ examples :=
     title: 'Test'
   //. filename: 'tetrotile.tsv'
   //  title: 'Tetromino Tiling'
-defaultExample := 'tablelayout/optimization.tsv'
+defaultExample := 'kplumber.tsv'
 
 type DimVal = { value: string, bg: string }
 type Entry = Record<string, number | string> & {
