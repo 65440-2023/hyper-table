@@ -1,0 +1,17 @@
+p	$1$		$O(1)$		any	
+m	$O(1)$		any	
+input	explicit		succinct	
+
+m
+input	p
+%
+\textcolor{black}{$O(1)$ 3.1}	cyan	p	1	m	0
+\textcolor{black}{$O(1)$ 3.1}	cyan	p	0	m	0
+%
+\textcolor{black}{$O(n)$ 3.5}	cyan	input	0
+\textcolor{black}{$O(n)$ 3.6}	cyan	p	0
+\textcolor{black}{polynomial 3.8}	cyan	p	1
+%
+coNP-complete 2.1 6.1	red	input	1	p	2
+%
+open	yellow

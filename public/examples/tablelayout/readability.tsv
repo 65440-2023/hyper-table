@@ -1,0 +1,40 @@
+p	$1$		$O(1)$		any	
+m	$O(1)$		any	
+values	set		ordered		poset		relation		
+%values	\rotatebox{90}{set}		\rotatebox{90}{ordered}		\rotatebox{90}{poset}		\rotatebox{90}{relation}		
+d	$1$		$2$	
+results	set		poset		
+input	explicit		succinct	
+
+m	input	results
+p	d	values
+%
+you are here	brown	p	2	m	1	values	2	d	1	results	0	input	1	
+%
+no	black	p	0	d	1
+%
+\textcolor{black}{$O(1)$ 3.1}	cyan	p	1	m	0
+\textcolor{black}{$O(1)$ 3.1}	cyan	p	0	m	0
+%
+\textcolor{black}{$O(n)$ 3.9}	cyan	p	0	values	1
+\textcolor{black}{P 3.10}	cyan	p	1	values	1
+$O(n\log n)$ 3.7	cyan	p	0	values	0	results	0
+%
+QP 4.3	teal	m	0	input	0
+QP 4.2	teal	values	1	input	0
+% this is one hardness result, that applies to {p=1,2} x {values=0,2,3}. also when input=0 it's actually complete. so it's 12 entries
+NP-h 5.4	orange	p	1	d	1	m	1	values	0	input	1
+NP-h 5.4	orange	p	2	d	1	m	1	values	0	input	1
+NP-h 5.4	orange	p	1	d	1	m	1	values	2	input	1
+NP-h 5.4	orange	p	2	d	1	m	1	values	2	input	1
+NP-h 5.4	orange	p	1	d	1	m	1	values	3	input	1
+NP-h 5.4	orange	p	2	d	1	m	1	values	3	input	1
+%
+NP-c 2.3, 5.4	red	p	1	d	1	m	1	values	0	input	0
+NP-c 2.3, 5.4	red	p	2	d	1	m	1	values	0	input	0
+NP-c 2.3, 5.4	red	p	1	d	1	m	1	values	2	input	0
+NP-c 2.3, 5.4	red	p	2	d	1	m	1	values	2	input	0
+NP-c 2.3, 5.4	red	p	1	d	1	m	1	values	3	input	0
+NP-c 2.3, 5.4	red	p	2	d	1	m	1	values	3	input	0
+%
+open	yellow

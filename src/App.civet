@@ -3,6 +3,10 @@ from solid-js/store import { createStore }
 from solid-dnd-directive import { dndzone }
 from katex import { renderToString }
 
+selfDescription := '''
+  Results from “Hardness Table Layout Hardness Table”
+  by MIT Hardness Group, Josh Brunner, Andy Tockman, Frederick Stock, Della Hendrickson, Hayashi Layers, Timothy Gomez, Erik D. Demaine, Jenny Diomidova (2025)
+'''
 examples :=
   . filename: 'asp-cgs.tsv'
     title: 'Constraint Graph Satisfaction Counting'
@@ -25,8 +29,17 @@ examples :=
       “<a href="https://erikdemaine.org/papers/MixedSimpleFolds_TJM/">Complexity of Simple Folding of Mixed Orthogonal Crease Patterns</a>”
       by Hugo Akitaya, Josh Brunner, Erik D. Demaine, Della Hendrickson, Victor Luo, and Andy Tockman (2023)
     '''
-  . filename: 'tablelayout.tsv'
-    title: 'Hardness Table Layout Hardness Table'
+  //. filename: 'tablelayout.tsv'
+  //  title: 'Hardness Table Layout Hardness Table'
+  . filename: 'tablelayout/completion.tsv'
+    title: 'Hardness Table Layout Hardness Table: Completion'
+    description: selfDescription
+  . filename: 'tablelayout/readability.tsv'
+    title: 'Hardness Table Layout Hardness Table: Readability'
+    description: selfDescription
+  . filename: 'tablelayout/optimization.tsv'
+    title: 'Hardness Table Layout Hardness Table: Optimization'
+    description: selfDescription
   . filename: 'tcells.tsv'
     title: 'T Cells'
     description: '''
@@ -38,7 +51,7 @@ examples :=
     title: 'Test'
   //. filename: 'tetrotile.tsv'
   //  title: 'Tetromino Tiling'
-defaultExample := 'tablelayout.tsv'
+defaultExample := 'tablelayout/optimization.tsv'
 
 type DimVal = { value: string, bg: string }
 type Entry = Record<string, number | string> & {
