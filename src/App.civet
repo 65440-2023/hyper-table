@@ -6,14 +6,34 @@ from katex import { renderToString }
 examples :=
   . filename: 'asp-cgs.tsv'
     title: 'Constraint Graph Satisfaction Counting'
+    description: '''
+      Results from
+      “<a href="https://erikdemaine.org/papers/SharpSAT_ISAAC2024/">Easier Ways to Prove Counting Hard: A Dichotomy for Generalized #SAT, Applied to Constraint Graphs</a>”
+      by MIT Hardness Group, Josh Brunner, Erik D. Demaine, Jenny Diomidova, Timothy Gomez, Markus Hecher, Frederick Stock, and Zixiang Zhou (2024)
+    '''
   . filename: 'kplumber.tsv'
     title: 'KPlumber'
+    description: '''
+      Results from
+      “<a href="https://doi.org/10.1016/j.tcs.2002.12.002">It is tough to be a plumber</a>”
+      by Daniel Král’, Vladan Majerech, Jiřı́ Sgall, Tomáš Tichý, and Gerhard Woeginger (2004)
+    '''
   . filename: 'simplefolding.tsv'
     title: 'Simple Folding'
+    description: '''
+      Results from
+      “<a href="https://erikdemaine.org/papers/MixedSimpleFolds_TJM/">Complexity of Simple Folding of Mixed Orthogonal Crease Patterns</a>”
+      by Hugo Akitaya, Josh Brunner, Erik D. Demaine, Della Hendrickson, Victor Luo, and Andy Tockman (2023)
+    '''
   . filename: 'tablelayout.tsv'
     title: 'Hardness Table Layout Hardness Table'
   . filename: 'tcells.tsv'
     title: 'T Cells'
+    description: '''
+      Results from
+      “<a href="https://erikdemaine.org/papers/GridGraphs_FUN2024/">ASP-Completeness of Hamiltonicity in Grid Graphs, with Applications to Loop Puzzles</a>”
+      by MIT Hardness Group, Josh Brunner, Lily Chung, Erik D. Demaine, Della Hendrickson, and Andy Tockman (2024)
+    '''
   . filename: 'test.tsv'
     title: 'Test'
   //. filename: 'tetrotile.tsv'
@@ -244,6 +264,8 @@ export function App()
         setExample undefined
       reader.readAsText file
   >
+  <div .description
+   innerHTML={examples.find(.filename is example())?.description ?? ''}>
   <Show when={hItems()# or vItems()#}>
     <hr>
     <.dimss>
