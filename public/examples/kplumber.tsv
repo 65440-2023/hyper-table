@@ -1,0 +1,20 @@
+% https://www.sciencedirect.com/science/article/pii/S0304397503005954?via%3Dihub
+O			\textcolor{white}{\texttt{O}}	violet
+D			\textcolor{white}{\texttt{D}}	violet
+S			\textcolor{white}{\texttt{S}}	violet
+C			\textcolor{white}{\texttt{C}}	violet
+T			\textcolor{white}{\texttt{T}}	violet
+X			\textcolor{white}{\texttt{X}}	violet
+
+%S	C	T
+%D	O	X
+X	D	S
+O	T	C
+P (Thm 2)	cyan	S	0
+P (Thm 3)	cyan	D	0	S	1	T	0
+NP-complete (Thm 8)	orange	C	1	D	1	S	1
+NP-complete (Thm 8)	orange	C	1	T	1	S	1
+P (Thm 4)	cyan	C	0	D	0	S	1
+equivalent (Thm 9)	green	C	0	D	1	S	1
+%
+open	yellow

@@ -6,8 +6,8 @@ from katex import { renderToString }
 examples :=
   . filename: 'asp-cgs.tsv'
     title: 'Constraint Graph Satisfaction Counting'
-  //. filename: 'plumber.tsv'
-  //  title: 'KPlumber'
+  . filename: 'kplumber.tsv'
+    title: 'KPlumber'
   . filename: 'simplefolding.tsv'
     title: 'Simple Folding'
   . filename: 'tablelayout.tsv'
@@ -62,12 +62,12 @@ function parse(text: string): Parsed
   // e.g. you might want the last line to be 'open	' with no parameters to cover everything else
   // a line that starts with % is a comment
   lines := text.split /\r\n?|\n/g
+  .filter not .startsWith '%'
   line .= -1
 
   // Parameters and their values
   dimvals: Record<string, DimVal[]> := {}
   while lines[++line].trim()
-    continue if lines[line].startsWith '%'
     [d, ...vs] := lines[line].split '\t'
     dimvals[d] = []
     for i of [0...vs#] by 2
@@ -79,14 +79,11 @@ function parse(text: string): Parsed
       [d]: v#
 
   // Default assignment
-  while lines[++line].startsWith '%'
-  hdims := lines[line].split '\t'
-  while lines[++line].startsWith '%'
-  vdims := lines[line].split '\t'
+  hdims := lines[++line].split '\t'
+  vdims := lines[++line].split '\t'
 
   entries: Entry[] := []
   while lines[++line]
-    continue if lines[line].startsWith '%'
     [val, bg, ...ds] := lines[line].split '\t'
     entries.push {}
       for i of [0...ds#] by 2
@@ -275,6 +272,9 @@ export function App()
             >do
               style: Record<string, string> := {}
               html .= rect.value
+              .replace /\\texttt{([^}]*)}/g, (_, text) =>
+                style['font-family'] = 'monospace'
+                text
               .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
                 style.color = color
                 text
