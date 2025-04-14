@@ -6,10 +6,10 @@ C			\textcolor{white}{\texttt{C}}	violet
 T			\textcolor{white}{\texttt{T}}	violet
 X			\textcolor{white}{\texttt{X}}	violet
 
-%S	C	T
-%D	O	X
-X	D	S
-O	T	C
+S	C	T
+D	O	X
+%X	D	S
+%O	T	C
 P (Thm 2)	cyan	S	0
 P (Thm 3)	cyan	D	0	S	1	T	0
 NP-complete (Thm 8)	orange	C	1	D	1	S	1
