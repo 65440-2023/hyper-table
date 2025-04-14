@@ -53,6 +53,26 @@ examples :=
   //  title: 'Tetromino Tiling'
 defaultExample := 'kplumber.tsv'
 
+// Data files use LaTeX colors. This map converts them to CSS colors.
+// Based on https://github.com/latex3/xcolor/blob/main/xcolor.dtx
+colormap: Record<string, string> :=
+  white: '#ffffff'
+  black: '#000000'
+  red: '#ff0000'
+  green: '#00ff00'
+  blue: '#0000ff'
+  lime: '#bfff00'
+  orange: '#ff8000'
+  purple: '#bf0040'
+  teal: '#008080'
+  violet: '#800080'
+  cyan: '#00ffff'
+  magenta: '#ff00ff'
+  yellow: '#ffff00'
+function mapColor(color: string): string
+  console.warn `Unknown color ${color}` unless color in colormap
+  return colormap[color] ?? color
+
 type DimVal = { value: string, bg: string }
 type Entry = Record<string, number | string> & {
   '!val': string
@@ -304,7 +324,7 @@ export function App()
       <tr>
         <For each=row>(rect) =>
           <td rowspan={rect.ve - rect.vs} colspan={rect.he - rect.hs} style=
-            'background-color': rect.bg
+            'background-color': mapColor rect.bg
           >
             >do
               style: Record<string, string> := {}
@@ -313,7 +333,7 @@ export function App()
                 style['font-family'] = 'monospace'
                 text
               .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
-                style.color = color
+                style.color = mapColor color
                 text
               .replace /\\rotatebox\{90\}{([^}]+)}/g, (_, text) =>
                 style.'writing-mode' = 'sideways-lr'
