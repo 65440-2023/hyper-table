@@ -37,6 +37,7 @@ no	black	question	1	results structure	4
 \textcolor{white}{$O(1)$}	blue	P	1	max values	0
 \textcolor{white}{$O(1)$}	blue	P	0	max values	0
 %
+\textcolor{white}{$O(n)$}	blue	input format	0	question	2
 \textcolor{white}{$O(n)$}	blue	P	0	value structure	1
 \textcolor{white}{P}	blue	P	1	value structure	1
 %
