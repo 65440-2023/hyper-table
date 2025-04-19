@@ -216,8 +216,8 @@ function makeRows(data: Parsed): Rect[][]
         wth := combos dims, hdims[i+1..]
         col := hoff + copy * combos(dims, hdims[i..]) + j * wth
         rows[i].push
-          vs: i+1
-          ve: i+2
+          vs: i
+          ve: i+1
           hs: col
           he: col + wth
           value: v.value
@@ -231,14 +231,51 @@ function makeRows(data: Parsed): Rect[][]
         (rows[row] ?= []).push
           vs: row
           ve: row + hgt
-          hs: i+1
-          he: i+2
+          hs: i
+          he: i+1
           value: v.value
           bg: v.bg
   // body
   for rect of rects
-    (rows[rect.vs + voff] ?= []).push rect
+    (rows[rect.vs + voff] ?= []).push {}
+      ...rect
+      vs: rect.vs + voff
+      ve: rect.ve + voff
+      hs: rect.hs + hoff
+      he: rect.he + hoff
   rows
+
+function latexTable(rows: Rect[][]): string
+  width :=
+    for max row of rows
+      for max cell of row
+        cell.he
+  return '' unless width > 0
+  String.raw```
+    \documentclass{standalone}
+    \usepackage[table]{xcolor}
+    \usepackage{nicematrix}
+    \begin{document}
+
+    \begin{NiceTabular}{${'c'.repeat width}}[hvlines]
+      \CodeBefore
+    ${for join row of rows
+      for join cell of row when cell.bg
+        String.raw```    \rectanglecolor{${cell.bg}}{${cell.vs+1}-${cell.hs+1}}{${cell.ve}-${cell.he}}
+
+```}  \Body
+    ${for join row of rows
+      blocks .=
+        for col of [0..<width]
+          ''
+      for cell of row
+        blocks[cell.hs] = String.raw`\Block{${cell.ve-cell.vs}-${cell.he-cell.hs}}{${cell.value}} `
+      '    ' + blocks.join("& ") + String.raw'\\' + '\n'
+    }\end{NiceTabular}
+
+    \end{document}
+
+  ```
 
 export function App()
   [example, setExample] := createSignal<string?> defaultExample
@@ -346,3 +383,7 @@ export function App()
                 renderToString math
               html or= '&nbsp;'
               <span {style} innerHTML=html>
+  <details>
+    <summary>LaTeX code
+    <pre>
+      {latexTable rows()}
