@@ -1,4 +1,4 @@
-from solid-js import { createEffect, createSignal, For, Show, batch }
+from solid-js import { createEffect, createMemo, createSignal, For, Show, batch }
 from solid-js/store import { createStore }
 from solid-dnd-directive import { dndzone }
 from katex import { renderToString }
@@ -245,18 +245,23 @@ function makeRows(data: Parsed): Rect[][]
       he: rect.he + hoff
   rows
 
-function latexTable(rows: Rect[][]): string
+function latexTable(rows: Rect[][], preamble: boolean): string
   width :=
     for max row of rows
       for max cell of row
         cell.he
   return '' unless width > 0
-  String.raw```
-    \documentclass{standalone}
-    \usepackage[table]{xcolor}
-    \usepackage{nicematrix}
-    \begin{document}
+  tex .= ''
+  if preamble
+    tex += String.raw```
+      \documentclass{standalone}
+      \usepackage[table]{xcolor}
+      \usepackage{nicematrix}
+      \begin{document}
 
+
+    ```
+  tex += String.raw```
     \begin{NiceTabular}{${'c'.repeat width}}[hvlines]
       \CodeBefore
     ${for join row of rows
@@ -273,9 +278,13 @@ function latexTable(rows: Rect[][]): string
       '    ' + blocks.join("& ") + String.raw'\\' + '\n'
     }\end{NiceTabular}
 
-    \end{document}
-
   ```
+  if preamble
+    tex += String.raw```
+
+      \end{document}
+    ```
+  tex
 
 export function App()
   [example, setExample] := createSignal<string?> defaultExample
@@ -285,6 +294,7 @@ export function App()
   [vDims, setVDims] := createSignal<Item[]> []
   [hItems, setHItems] := createSignal<Item[]> []
   [vItems, setVItems] := createSignal<Item[]> []
+  [preamble, setPreamble] := createSignal true
 
   createEffect :void =>
     return unless loading := example()
@@ -313,6 +323,7 @@ export function App()
       vdims: vDims().map .title
   createEffect => setHItems hDims()
   createEffect => setVItems vDims()
+  latex := createMemo => latexTable rows(), preamble()
   let downloadA!: HTMLAnchorElement
 
   <h1>Hyper-Table
@@ -385,10 +396,18 @@ export function App()
               html or= '&nbsp;'
               <span {style} innerHTML=html>
   <details>
-    <summary>LaTeX code
-      <button onClick=
+    <summary title="Click to toggle visibility of LaTeX code for table">
+      LaTeX code
+      <label title=
+        String.raw`With preamble, the .tex file compiles directly with pdflatex. Disable to make a file that can be included in a LaTeX document via \input or \include.`
+      >
+        <input type="checkbox" checked=preamble() onInput=
+          (e) => setPreamble e.currentTarget.checked
+        >
+        Preamble
+      <button title="Download a .tex file for this table" onClick=
         (e) =>
-          url := URL.createObjectURL new Blob [latexTable rows()]
+          url := URL.createObjectURL new Blob [latex()]
           downloadA.href = url
           downloadA.click()
           downloadA.href = ''
@@ -396,4 +415,4 @@ export function App()
       >Download
       <a ref=downloadA style={display: 'none'} download="table.tex">
     <pre>
-      {latexTable rows()}
+      {latex()}
