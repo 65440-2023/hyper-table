@@ -1,42 +1,42 @@
-p	$1$		$O(1)$		any	
-m	$O(1)$		any	
+$p$	$1$		$O(1)$		any	
+$m$	$O(1)$		any	
 %values	\rotatebox{90}{set}		\rotatebox{90}{ordered const.}		\rotatebox{90}{poset const.}		\rotatebox{90}{poset obj.}		\rotatebox{90}{relation obj.}	
 values	set		ordered const.		poset const.		poset obj.		relation obj.	
-d	$1$		$2$	
+$d$	$1$		$2$	
 results	set		poset const.		poset obj.	
 input	explicit		succinct	
 
-m	input	d
-p	results	values
+$m$	input	$d$
+$p$	results	values
 %
-no	black	p	0	d	1
+no	black	$p$	0	$d$	1
 %
 \textcolor{black}{always 3.2}	cyan	values	0	results	0
 \textcolor{black}{always 3.2}	cyan	values	1	results	0
 \textcolor{black}{always 3.2}	cyan	values	2	results	0
 \textcolor{black}{always 3.2}	cyan	values	3	results	0
-\textcolor{black}{always 3.3}	cyan	values	0	results	1	p	0
-\textcolor{black}{always 3.3}	cyan	values	0	results	2	p	0
-\textcolor{black}{$O(1)$ 3.1}	cyan	p	1	m	0
-\textcolor{black}{$O(1)$ 3.1}	cyan	p	0	m	0
+\textcolor{black}{always 3.3}	cyan	values	0	results	1	$p$	0
+\textcolor{black}{always 3.3}	cyan	values	0	results	2	$p$	0
+\textcolor{black}{$O(1)$ 3.1}	cyan	$p$	1	$m$	0
+\textcolor{black}{$O(1)$ 3.1}	cyan	$p$	0	$m$	0
 %
-\textcolor{black}{$O(n)$ 3.4}	cyan	p	0	values	2	results	1
-\textcolor{black}{$O(n)$ 3.4}	cyan	p	0	values	1	results	1
+\textcolor{black}{$O(n)$ 3.4}	cyan	$p$	0	values	2	results	1
+\textcolor{black}{$O(n)$ 3.4}	cyan	$p$	0	values	1	results	1
 %
-\textcolor{black}{$O(n^2)$ 3.9}	cyan	p	0	values	1
-\textcolor{black}{P 3.10}	cyan	p	1	values	1
+\textcolor{black}{$O(n^2)$ 3.9}	cyan	$p$	0	values	1
+\textcolor{black}{P 3.10}	cyan	$p$	1	values	1
 %
-QP 4.3	teal	m	0	input	0
+QP 4.3	teal	$m$	0	input	0
 QP 4.2	teal	values	1	input	0
 % 3 np-hardness results, though one is split into two. and each becomes completeness when input=0
-NP-c 2.3, 5.1	red	values	3	results	2	m	1	input	0
-NP-c 2.3, 5.2	red	values	3	results	1	m	1	input	0
-NP-c 2.3, 5.2	red	values	2	results	2	m	1	input	0
-NP-c 2.3, 5.3	red	values	4	m	1	input	0
+NP-c 2.3, 5.1	red	values	3	results	2	$m$	1	input	0
+NP-c 2.3, 5.2	red	values	3	results	1	$m$	1	input	0
+NP-c 2.3, 5.2	red	values	2	results	2	$m$	1	input	0
+NP-c 2.3, 5.3	red	values	4	$m$	1	input	0
 %
-NP-h 5.1	orange	values	3	results	2	m	1	input	1
-NP-h 5.2	orange	values	3	results	1	m	1	input	1
-NP-h 5.2	orange	values	2	results	2	m	1	input	1
-NP-h 5.3	orange	values	4	m	1	input	1
+NP-h 5.1	orange	values	3	results	2	$m$	1	input	1
+NP-h 5.2	orange	values	3	results	1	$m$	1	input	1
+NP-h 5.2	orange	values	2	results	2	$m$	1	input	1
+NP-h 5.3	orange	values	4	$m$	1	input	1
 %
 open	yellow

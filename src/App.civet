@@ -1,4 +1,4 @@
-from solid-js import { createEffect, createMemo, createSignal, For, Show, batch }
+from solid-js import { createEffect, createMemo, createSignal, For, Show, batch, splitProps }
 from solid-js/store import { createStore }
 from solid-dnd-directive import { dndzone }
 from katex import { renderToString }
@@ -329,6 +329,30 @@ function latexTable(rows: Rect[][], {preamble:: boolean, headers:: boolean}): st
     ```
   tex
 
+function Content(props: { children: string, class?: string })
+  [, otherProps] := splitProps props, ['children']
+  content := createMemo =>
+    style: Record<string, string> := {}
+    html .= props.children
+    .replace /\\texttt{([^}]*)}/g, (_, text) =>
+      style['font-family'] = 'monospace'
+      text
+    .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
+      style.color = mapColor color
+      text
+    .replace /\\rotatebox\{90\}{([^}]+)}/g, (_, text) =>
+      style.'writing-mode' = 'sideways-lr'
+      text
+    .replace /&/g, '&amp;'
+    .replace /</g, '&lt;'
+    .replace />/g, '&gt;'
+    .replace /\\([#&])/g, '$1'
+    .replace /\$([^$]+)\$/g, (_, math) =>
+      renderToString math
+    html or= '&nbsp;'
+    {style, html}
+  <span {...props} {content().style} innerHTML=content().html>
+
 export function App()
   [example, setExample] := createSignal<string?> defaultExample
   [data, setData] := createStore<Parsed | {}>()
@@ -403,7 +427,7 @@ export function App()
         (e) => setHDims e.detail.items
       >
         <For each=hItems()>(dim) =>
-          <span .dim>{dim.title}
+          <Content .dim>{dim.title}
       <label>Vertical:
       <.dims use:dndzone={items: vItems} on:consider=
         (e) => setVItems e.detail.items
@@ -411,7 +435,7 @@ export function App()
         (e) => setVDims e.detail.items
       >
         <For each=vItems()>(dim) =>
-          <span .dim>{dim.title}
+          <Content .dim>{dim.title}
   <hr>
   <table>
     <For each=rows()>(row) =>
@@ -421,26 +445,7 @@ export function App()
             'background-color': mapColor rect.bg
           classList={header: rect.header}
           >
-            >do
-              style: Record<string, string> := {}
-              html .= rect.value
-              .replace /\\texttt{([^}]*)}/g, (_, text) =>
-                style['font-family'] = 'monospace'
-                text
-              .replace /\\textcolor{([^}]*)}{([^}]+)}/g, (_, color, text) =>
-                style.color = mapColor color
-                text
-              .replace /\\rotatebox\{90\}{([^}]+)}/g, (_, text) =>
-                style.'writing-mode' = 'sideways-lr'
-                text
-              .replace /&/g, '&amp;'
-              .replace /</g, '&lt;'
-              .replace />/g, '&gt;'
-              .replace /\\([#&])/g, '$1'
-              .replace /\$([^$]+)\$/g, (_, math) =>
-                renderToString math
-              html or= '&nbsp;'
-              <span {style} innerHTML=html>
+            <Content>{rect.value}
   <label title=
     `Add parameter names in the top-left square of the table`
   >
