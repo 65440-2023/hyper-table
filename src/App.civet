@@ -313,6 +313,7 @@ export function App()
       vdims: vDims().map .title
   createEffect => setHItems hDims()
   createEffect => setVItems vDims()
+  let downloadA!: HTMLAnchorElement
 
   <h1>Hyper-Table
     <span .link>
@@ -385,5 +386,14 @@ export function App()
               <span {style} innerHTML=html>
   <details>
     <summary>LaTeX code
+      <button onClick=
+        (e) =>
+          url := URL.createObjectURL new Blob [latexTable rows()]
+          downloadA.href = url
+          downloadA.click()
+          downloadA.href = ''
+          URL.revokeObjectURL url
+      >Download
+      <a ref=downloadA style={display: 'none'} download="table.tex">
     <pre>
       {latexTable rows()}
