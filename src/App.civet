@@ -70,7 +70,7 @@ colormap: Record<string, string> :=
   magenta: '#ff00ff'
   yellow: '#ffff00'
 function mapColor(color: string): string
-  console.warn `Unknown color ${color}` unless color in colormap
+  console.warn `Unknown color ${color}` if color and color not in colormap
   return colormap[color] ?? color
 
 type DimVal = { value: string, bg: string }
