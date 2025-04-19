@@ -4,7 +4,8 @@ from solid-dnd-directive import { dndzone }
 from katex import { renderToString }
 
 selfDescription := '''
-  Results from “Hardness Table Layout Hardness Table”
+  Results from
+  “<a href="https://erikdemaine.org/papers/HardnessTables_SIGTBD2023/">Hardness Table Layout Hardness Table</a>”
   by MIT Hardness Group, Josh Brunner, Andy Tockman, Frederick Stock, Della Hendrickson, Hayashi Layers, Timothy Gomez, Erik D. Demaine, Jenny Diomidova (2025)
 '''
 examples :=
