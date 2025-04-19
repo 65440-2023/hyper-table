@@ -40,8 +40,8 @@ alternating with cell background color:
 | *[blank line]* | | | | | |
 
 Part 2 starts with two rows that list which parameters to enumerate in the
-horizontal and vertical dimension, respectively.
-Then it lists all results, which list cell content, cell color,
+horizontal and vertical dimension, respectively (in the initial view).
+Then it lists all results, where each row lists cell content, cell color,
 and then pairs of parameters and their values
 (where all unspecified parameters can take arbitrary values).
 
