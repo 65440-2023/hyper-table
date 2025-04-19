@@ -209,8 +209,8 @@ function makeRows(data: Parsed): Rect[][]
   // top headers
   for d, i of data.hdims
     rows[i] = []
-    for h of [0...hoff]
-      rows[i].push {vs: i, ve: i+1, hs: h, he: h+1, value: '', bg: ''}
+    // top-left corner is a single rectangle
+    (rows[0][0] ?= {vs: 0, ve: 0, hs: 0, he: hoff, value: '', bg: ''}).ve = i+1
     for copy of [0...combos dims, hdims[...i]]
       for v, j of dimvals[d]
         wth := combos dims, hdims[i+1..]
