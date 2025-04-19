@@ -84,6 +84,7 @@ type Parsed = {
   hdims: string[]
   vdims: string[]
   entries: Entry[]
+  headers?: boolean
 }
 type Rect = {
   hs: number
@@ -92,6 +93,7 @@ type Rect = {
   ve: number
   bg: string
   value: string
+  header?: boolean
 }
 type Item = {
   id: number
@@ -199,40 +201,71 @@ function rectangulate(grid: Entry??[][]): Rect[]
   ans
 
 function makeRows(data: Parsed): Rect[][]
-  {dims, dimvals, hdims, vdims} := data
+  {dims, dimvals, hdims, vdims, headers} := data
   grid := makeGrid data
   rects := rectangulate grid
 
-  hoff := vdims#
-  voff := hdims#
+  // header headers need a bit more space because of the corner
+  hoff := vdims# + Number headers
+  voff := hdims# + Number headers
   rows: Rect[][] := []
   // top headers
   for d, i of data.hdims
     rows[i] = []
     // top-left corner is a single rectangle
-    (rows[0][0] ?= {vs: 0, ve: 0, hs: 0, he: hoff, value: '', bg: ''}).ve = i+1
+    if i is 0
+      rows[i].push
+        vs: 0
+        ve: hdims#
+        hs: 0
+        he: vdims#
+        value: ''
+        bg: ''
+        header: true
+    // top header headers
+    if headers
+      rows[i].push
+        vs: i
+        ve: i+1
+        hs: vdims#
+        he: vdims#+1
+        value: d
+        bg: ''
+        header: true
     for copy of [0...combos dims, hdims[...i]]
+      wth := combos dims, hdims[i+1..]
+      hgt := 1 + Number headers and i is hdims# - 1
       for v, j of dimvals[d]
-        wth := combos dims, hdims[i+1..]
         col := hoff + copy * combos(dims, hdims[i..]) + j * wth
         rows[i].push
           vs: i
-          ve: i+1
+          ve: i + hgt
           hs: col
           he: col + wth
           value: v.value
           bg: v.bg
   // side headers
-  for d, i of data.vdims
+  for d, i of vdims
+    // side header headers
+    if headers
+      (rows[hdims#] ?= []).push
+        vs: hdims#
+        ve: hdims#+1
+        hs: i
+        he: i+1
+        value: d
+        bg: ''
+        header: true
+    hgt := combos dims, vdims[i+1..]
+    wth := 1 + Number headers and i is vdims# - 1
     for copy of [0...combos dims, vdims[...i]]
       for v, j of dimvals[d]
-        hgt := combos dims, vdims[i+1..]
         row := voff + copy * combos(dims, vdims[i..]) + j * hgt
         (rows[row] ?= []).push
           vs: row
           ve: row + hgt
           hs: i
-          he: i+1
+          he: i + wth
           value: v.value
           bg: v.bg
   // body
@@ -245,12 +278,21 @@ function makeRows(data: Parsed): Rect[][]
       he: rect.he + hoff
   rows
 
-function latexTable(rows: Rect[][], preamble: boolean): string
+function latexTable(rows: Rect[][], {preamble:: boolean, headers:: boolean}): string
   width :=
     for max row of rows
       for max cell of row
         cell.he
   return '' unless width > 0
+
+  // LaTeX hack to remove border for header headers
+  if headers
+    rows = [...rows]
+    rows[0] = [...rows[0]]
+    rows[0][0] = {...rows[0][0]}
+    rows[0][0].he++
+    rows[0][0].ve++
+
   tex .= ''
   if preamble
     tex += String.raw```
@@ -294,6 +336,7 @@ export function App()
   [vDims, setVDims] := createSignal<Item[]> []
   [hItems, setHItems] := createSignal<Item[]> []
   [vItems, setVItems] := createSignal<Item[]> []
+  [headers, setHeaders] := createSignal true
   [preamble, setPreamble] := createSignal true
 
   createEffect :void =>
@@ -321,9 +364,10 @@ export function App()
       ...data
       hdims: hDims().map .title
       vdims: vDims().map .title
+      headers: headers()
   createEffect => setHItems hDims()
   createEffect => setVItems vDims()
-  latex := createMemo => latexTable rows(), preamble()
+  latex := createMemo => latexTable rows(), {preamble(), headers()}
   let downloadA!: HTMLAnchorElement
 
   <h1>Hyper-Table
@@ -374,6 +418,7 @@ export function App()
         <For each=row>(rect) =>
           <td rowspan={rect.ve - rect.vs} colspan={rect.he - rect.hs} style=
             'background-color': mapColor rect.bg
+          classList={header: rect.header}
           >
             >do
               style: Record<string, string> := {}
@@ -395,6 +440,13 @@ export function App()
                 renderToString math
               html or= '&nbsp;'
               <span {style} innerHTML=html>
+  <label title=
+    `Add parameter names in the top-left square of the table`
+  >
+    <input type="checkbox" checked=headers() onInput=
+      (e) => setHeaders e.currentTarget.checked
+    >
+    Headers in top-left corner
   <details>
     <summary title="Click to toggle visibility of LaTeX code for table">
       LaTeX code
