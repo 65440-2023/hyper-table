@@ -17,8 +17,8 @@ for you to experiment with.  Select one from the drop down.
 You can also upload a [custom data file](#input-format).
 
 This tool was built to illustrate the paper
-“[Hardness Table Layout Hardness Table](https://erikdemaine.org/papers/HardnessTables_SIGTBD2023/)”
-by MIT Hardness Group, Josh Brunner, Andy Tockman, Frederick Stock, Della Hendrickson, Hayashi Layers, Timothy Gomez, Erik D. Demaine, Jenny Diomidova (2025),
+“[Hardness Table Layout Hardness Table](https://erikdemaine.org/papers/HardnessTables_SIGTBD2025/)”
+by MIT Hardness Group, Josh Brunner, Andy Tockman, Frederick Stock, Della Hendrickson, Hayashi Layers, Timothy Gomez, Erik D. Demaine, Jenny Diomidova,
 presented at [SIGTBD 2025](http://sigtbd.csail.mit.edu/).
 In particular, it includes several example tables from that paper.
 
